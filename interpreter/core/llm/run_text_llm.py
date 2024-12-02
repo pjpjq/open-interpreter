@@ -1,14 +1,15 @@
 def run_text_llm(llm, params):
     ## Setup
 
-    try:
-        # Add the system message
-        params["messages"][0][
-            "content"
-        ] += "\nTo execute code on the user's machine, write a markdown code block. Specify the language after the ```. You will receive the output. Use any programming language."
-    except:
-        print('params["messages"][0]', params["messages"][0])
-        raise
+    if llm.execution_instructions:
+        try:
+            # Add the system message
+            params["messages"][0][
+                "content"
+            ] += "\n" + llm.execution_instructions
+        except:
+            print('params["messages"][0]', params["messages"][0])
+            raise
 
     ## Convert output to LMC format
 
@@ -17,7 +18,7 @@ def run_text_llm(llm, params):
     language = None
 
     for chunk in llm.completions(**params):
-        if llm.interpreter.debug_mode:
+        if llm.interpreter.verbose:
             print("Chunk in coding_llm", chunk)
 
         if "choices" not in chunk or len(chunk["choices"]) == 0:
@@ -25,6 +26,9 @@ def run_text_llm(llm, params):
             continue
 
         content = chunk["choices"][0]["delta"].get("content", "")
+
+        if content == None:
+            continue
 
         accumulated_block += content
 
@@ -60,7 +64,11 @@ def run_text_llm(llm, params):
 
             # If we do have a `language`, send it out
             if language:
-                yield {"type": "code", "format": language, "content": content}
+                yield {
+                    "type": "code",
+                    "format": language,
+                    "content": content.replace(language, ""),
+                }
 
         # If we're not in a code block, send the output as a message
         if not inside_code_block:

@@ -30,7 +30,7 @@ def display_output(output):
 
     # Return a message for the LLM.
     # We should make this specific to what happened in the future,
-    # like saying WHAT temporary file we made, ect. Keep the LLM informed.
+    # like saying WHAT temporary file we made, etc. Keep the LLM informed.
     return "Displayed on the user's machine."
 
 
@@ -48,6 +48,12 @@ def display_output_cli(output):
             ) as tmp_file:
                 image_data = base64.b64decode(output["content"])
                 tmp_file.write(image_data)
+
+                # # Display in Terminal (DISABLED, i couldn't get it to work)
+                # from term_image.image import from_file
+                # image = from_file(tmp_file.name)
+                # image.draw()
+
                 open_file(tmp_file.name)
         elif output["format"] == "path":
             open_file(output["content"])
@@ -56,8 +62,6 @@ def display_output_cli(output):
             delete=False, suffix=".html", mode="w"
         ) as tmp_file:
             html = output["content"]
-            if "<html>" not in html:
-                html = "<html>\n" + html + "\n</html>"
             tmp_file.write(html)
             open_file(tmp_file.name)
     elif "format" in output and output["format"] == "javascript":

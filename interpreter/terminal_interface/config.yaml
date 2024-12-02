@@ -1,8 +1,0 @@
-llm.model: "gpt-4"
-llm.temperature: 0
-# system_message: "default_system_message"  # The default system message for the LLM
-# custom_instructions: ""  # Custom instructions for the LLM
-# auto_run: False  # If True, the LLM will automatically run
-# debug_mode: False  # If True, the LLM will run in debug mode
-# max_output: 2000  # The maximum output visible to the LLM
-# safe_mode: "off"  # The safety mode for the LLM

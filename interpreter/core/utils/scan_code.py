@@ -17,20 +17,20 @@ def scan_code(code, language, interpreter):
     language_class = interpreter.computer.terminal.get_language(language)
 
     temp_file = create_temporary_file(
-        code, language_class.file_extension, verbose=interpreter.debug_mode
+        code, language_class.file_extension, verbose=interpreter.verbose
     )
 
     temp_path = os.path.dirname(temp_file)
     file_name = os.path.basename(temp_file)
 
-    if interpreter.debug_mode:
+    if interpreter.verbose:
         print(f"Scanning {language} code in {file_name}")
         print("---")
 
     # Run semgrep
     try:
         # HACK: we need to give the subprocess shell access so that the semgrep from our pyproject.toml is available
-        # the global namespace might have semgrep from guarddog installed, but guarddog is currenlty
+        # the global namespace might have semgrep from guarddog installed, but guarddog is currently
         # pinned to an old semgrep version that has issues with reading the semgrep registry
         # while scanning a single file like the temporary one we generate
         # if guarddog solves [#249](https://github.com/DataDog/guarddog/issues/249) we can change this approach a bit
@@ -55,4 +55,4 @@ def scan_code(code, language, interpreter):
         print(e)
         print("")  # <- Aesthetic choice
 
-    cleanup_temporary_file(temp_file, verbose=interpreter.debug_mode)
+    cleanup_temporary_file(temp_file, verbose=interpreter.verbose)
